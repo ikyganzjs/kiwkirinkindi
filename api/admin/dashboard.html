@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Iky Rest API</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+<div class="dashboard">
+  <header>
+    <h1>🧭 Dashboard Admin</h1>
+    <button id="logout">Logout</button>
+  </header>
+
+  <section id="info">
+    <h2>👤 Informasi Akun</h2>
+    <p><strong>Nama:</strong> <span id="username"></span></p>
+    <p><strong>Email:</strong> <span id="email"></span></p>
+    <p><strong>Apikey:</strong> <code id="apikey"></code></p>
+    <p><strong>IP:</strong> <span id="ip"></span></p>
+  </section>
+
+  <section id="users">
+    <h2>👥 Daftar Pengguna</h2>
+    <table>
+      <thead><tr><th>Username</th><th>Email</th><th>API Key</th><th>IP</th></tr></thead>
+      <tbody id="userList"></tbody>
+    </table>
+  </section>
+</div>
+
+<script src="/assets/script.js"></script>
+<script>
+const apikey = localStorage.getItem("apikey");
+const user = JSON.parse(localStorage.getItem("user"));
+if (!apikey) location.href = "/login";
+
+document.getElementById("username").textContent = user.username;
+document.getElementById("email").textContent = user.email;
+document.getElementById("apikey").textContent = apikey;
+
+document.getElementById("logout").onclick = () => {
+  localStorage.clear();
+  location.href = "/login";
+};
+
+(async () => {
+  const res = await fetch("/api/admin/users?apikey=" + apikey);
+  const data = await res.json();
+  if (data.status) {
+    document.getElementById("userList").innerHTML = data.users.map(u => `
+      <tr>
+        <td>${u.username}</td>
+        <td>${u.email}</td>
+        <td><code>${u.apikey}</code></td>
+        <td>${u.ip || '-'}</td>
+      </tr>
+    `).join("");
+  }
+})();
+</script>
+
+</body>
+</html>
