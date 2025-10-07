@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register - Iky Rest API</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+<div class="auth-container">
+  <h2>📝 Daftar Akun Baru</h2>
+  <form id="registerForm">
+    <input type="text" id="username" placeholder="Username" required />
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <input type="password" id="confirm" placeholder="Ulangi Password" required />
+    <button type="submit">Daftar</button>
+  </form>
+  <p>Sudah punya akun? <a href="/login">Login</a></p>
+  <div id="msg"></div>
+</div>
+
+<script src="/assets/script.js"></script>
+<script>
+document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm").value;
+  const msg = document.getElementById("msg");
+
+  if (password !== confirm) return msg.innerHTML = "⚠️ Password tidak cocok!";
+
+  msg.innerHTML = "⏳ Memproses...";
+  try {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password })
+    });
+    const data = await res.json();
+    if (data.status) {
+      msg.innerHTML = "✅ Berhasil daftar! Silakan login.";
+      setTimeout(() => window.location.href = "/login", 1500);
+    } else {
+      msg.innerHTML = "❌ " + data.error;
+    }
+  } catch (err) {
+    msg.innerHTML = "⚠️ Gagal daftar: " + err.message;
+  }
+});
+</script>
+
+</body>
+</html>
