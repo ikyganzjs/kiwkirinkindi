@@ -23,7 +23,7 @@ async function asahotak() {
 module.exports = {
   name: "Asah Otak",
   desc: "Data soal asah otak",
-  category: "Games",
+  category: "Game Seru",
   path: "/asahotak?apikey=",
   async run(req, res) {
     const { apikey } = req.query;
@@ -47,3 +47,4 @@ module.exports = {
     }
   },
 };
+
