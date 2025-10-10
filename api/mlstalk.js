@@ -25,8 +25,8 @@ async function mlstalk(id) {
 module.exports = {
   name: "ML Stalk",
   desc: "Stalking Mobile Legends account",
-  category: "Games",
-  path: "/stalk/ml?apikey=&id=",
+  category: "Stalker",
+  path: "/stalkml?apikey=&id=",
   async run(req, res) {
     const { apikey, id } = req.query;
 
@@ -52,3 +52,4 @@ module.exports = {
     }
   }
 };
+
