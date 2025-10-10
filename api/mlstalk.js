@@ -1,25 +1,25 @@
 const axios = require("axios");
 
 async function mlstalk(id) {
-  let data = JSON.stringify({
-    "app_id": 20007, // app_id untuk Mobile Legends
-    "login_id": id
+  const data = JSON.stringify({
+    app_id: 20007, // Mobile Legends
+    login_id: id
   });
 
-  let config = {
-    method: 'POST',
-    url: 'https://kiosgamer.co.id/api/auth/player_id_login',
+  const config = {
+    method: "POST",
+    url: "https://kiosgamer.co.id/api/auth/player_id_login",
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36',
-      'Accept': 'application/json, text/plain, */*',
-      'Content-Type': 'application/json',
-      'sec-ch-ua-platform': '"Android"',
-      'Origin': 'https://kiosgamer.co.id',
-      'Referer': 'https://kiosgamer.co.id/',
-      'Accept-Language': 'id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7',
-      'Cookie': 'source=mb; region=CO.ID;'
+      "authority": "kiosgamer.co.id",
+      "accept": "application/json, text/plain, */*",
+      "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+      "content-type": "application/json",
+      "origin": "https://kiosgamer.co.id",
+      "referer": "https://kiosgamer.co.id/app/20007",
+      "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36",
+      "cookie": "region=CO.ID; source=mb;"
     },
-    data: data
+    data
   };
 
   const api = await axios.request(config);
@@ -33,10 +33,8 @@ module.exports = {
   path: "/stalk/ml?apikey=&id=",
   async run(req, res) {
     const { apikey, id } = req.query;
-
     if (!apikey || !global.apikey.includes(apikey))
       return res.json({ status: false, error: "Apikey invalid" });
-
     if (!id)
       return res.json({ status: false, error: "Id is required" });
 
@@ -50,8 +48,9 @@ module.exports = {
     } catch (error) {
       res.status(500).json({
         status: false,
-        error: error.message || "Gagal mengambil data dari KiosGamer"
+        creator: "IKY RESTAPI",
+        error: error.response?.data || error.message
       });
     }
-  },
+  }
 };
