@@ -24,7 +24,7 @@ module.exports = {
   name: "Cak Lontong",
   desc: "Data soal cak lontong",
   category: "Games",
-  path: "/asahotak?apikey=",
+  path: "/caklontong?apikey=",
   async run(req, res) {
     const { apikey } = req.query;
 
@@ -48,3 +48,4 @@ module.exports = {
     }
   },
 };
+
