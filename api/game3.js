@@ -21,10 +21,10 @@ async function asahotak() {
 }
 
 module.exports = {
-  name: "Family100",
-  desc: "Data soal family100",
+  name: "Family 100",
+  desc: "Data soal family 100",
   category: "Games",
-  path: "/asahotak?apikey=",
+  path: "/family100?apikey=",
   async run(req, res) {
     const { apikey } = req.query;
 
@@ -48,3 +48,4 @@ module.exports = {
     }
   },
 };
+
