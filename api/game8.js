@@ -24,7 +24,7 @@ module.exports = {
   name: "Tebak Kalimat",
   desc: "Data soal tebak kalimat",
   category: "Games",
-  path: "/asahotak?apikey=",
+  path: "/tebakkalimat?apikey=",
   async run(req, res) {
     const { apikey } = req.query;
 
@@ -48,3 +48,4 @@ module.exports = {
     }
   },
 };
+
