@@ -2,9 +2,9 @@ const axios = require("axios");
 
 async function mlstalk(id) {
   const data = {
-    app_id: 20007, // Mobile Legends
+    app_id: 20007,
     login_id: id.toString(),
-    zone_id: "ID" // Wajib ada!
+    zone_id: "ID"
   };
 
   const headers = {
@@ -17,18 +17,22 @@ async function mlstalk(id) {
   };
 
   try {
-    const response = await axios.post("https://kiosgamer.co.id/api/auth/player_id_login", data, { headers });
+    const response = await axios.post(
+      "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://kiosgamer.co.id/api/auth/player_id_login"),
+      data,
+      { headers }
+    );
+
     return response.data;
   } catch (error) {
-    throw new Error(
-      error.response?.data?.message || error.message || "Gagal mengambil data ML"
-    );
+    console.error(error.response?.data || error.message);
+    throw new Error("Gagal mengambil data ML dari proxy");
   }
 }
 
 module.exports = {
   name: "ML Stalk",
-  desc: "Stalking Mobile Legends account",
+  desc: "Stalking akun Mobile Legends via proxy",
   category: "Stalker",
   path: "/stalk/ml?apikey=&id=",
   async run(req, res) {
@@ -42,13 +46,6 @@ module.exports = {
 
     try {
       const result = await mlstalk(id);
-      if (!result || !result.nickname)
-        return res.status(404).json({
-          status: false,
-          message: "Akun tidak ditemukan atau tidak valid.",
-          response: result
-        });
-
       res.json({
         status: true,
         creator: "IKY RESTAPI",
