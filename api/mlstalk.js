@@ -1,29 +1,23 @@
 const axios = require("axios");
 
 async function mlstalk(id) {
-  const data = JSON.stringify({
-    app_id: 20007, // Mobile Legends
-    login_id: id
-  });
+  const endpoint = `https://corsproxy.io/?https://kiosgamer.co.id/api/auth/player_id_login`;
 
-  const config = {
-    method: "POST",
-    url: "https://kiosgamer.co.id/api/auth/player_id_login",
-    headers: {
-      "authority": "kiosgamer.co.id",
-      "accept": "application/json, text/plain, */*",
-      "accept-language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-      "content-type": "application/json",
-      "origin": "https://kiosgamer.co.id",
-      "referer": "https://kiosgamer.co.id/app/20007",
-      "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36",
-      "cookie": "region=CO.ID; source=mb;"
-    },
-    data
+  const data = {
+    app_id: 20007,
+    login_id: id
   };
 
-  const api = await axios.request(config);
-  return api.data;
+  const headers = {
+    "accept": "application/json, text/plain, */*",
+    "content-type": "application/json",
+    "origin": "https://kiosgamer.co.id",
+    "referer": "https://kiosgamer.co.id/app/20007",
+    "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36"
+  };
+
+  const response = await axios.post(endpoint, data, { headers });
+  return response.data;
 }
 
 module.exports = {
