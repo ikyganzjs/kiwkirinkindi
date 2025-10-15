@@ -2,7 +2,7 @@ const axios = require("axios");
 
 module.exports = {
   name: "Perplexity",
-  desc: "Scrape hasil jawaban AI dari Perplexity",
+  desc: "Scrape jawaban AI dari Perplexity tanpa Puppeteer",
   category: "Scraper",
   path: "/scrape/perplexity?apikey=&query=",
   async run(req, res) {
@@ -12,50 +12,32 @@ module.exports = {
     if (!query) return res.json({ status: false, error: "Missing query" });
 
     try {
-      const { data: html } = await axios.get(
-        `https://www.perplexity.ai/search?q=${encodeURIComponent(query)}`,
+      const response = await axios.post(
+        "https://www.perplexity.ai/api/search",
+        {
+          q: query,
+          source: "default",
+        },
         {
           headers: {
+            "Content-Type": "application/json",
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            Accept:
-              "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-            "Accept-Encoding": "gzip, deflate, br, zstd",
-            "Accept-Language": "en-US,en;q=0.9",
-            "Cache-Control": "no-cache",
-            Pragma: "no-cache",
-            Referer: "https://www.google.com/",
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "none",
-            "Sec-Fetch-User": "?1",
-            "Upgrade-Insecure-Requests": "1",
-            DNT: "1",
-            Cookie:
-              "theme=dark; _pxhd=random_value_123456; cf_clearance=random_value_98765",
+            Referer: "https://www.perplexity.ai/",
+            Origin: "https://www.perplexity.ai",
           },
-          timeout: 10000,
-          validateStatus: () => true,
         }
       );
 
-      if (!html || html.includes("Access denied") || html.includes("403"))
-        return res.json({
-          status: false,
-          error:
-            "403 Forbidden — Perplexity menolak akses langsung. Coba pakai proxy atau header lain.",
-        });
+      const data = response.data;
+      let text = "Tidak ditemukan konten yang valid.";
 
-      // Ambil teks hasil AI
-      const match = html.match(/<p[^>]*>(.*?)<\/p>/g);
-      let cleanText = "Tidak ditemukan konten yang valid.";
-
-      if (match && match.length > 0) {
-        cleanText = match
-          .map((p) => p.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim())
-          .filter((t) => t.length > 30)
-          .slice(0, 5)
-          .join("\n\n");
+      if (data && data.text) {
+        text = data.text;
+      } else if (data?.answer?.text) {
+        text = data.answer.text;
+      } else if (data?.result) {
+        text = data.result;
       }
 
       res.json({
@@ -63,14 +45,16 @@ module.exports = {
         creator: "IKY RESTAPI",
         result: {
           query,
-          text: cleanText,
+          text,
         },
       });
     } catch (err) {
-      console.error(err);
       res.json({
         status: false,
-        error: err.message || "Gagal scrape dari Perplexity",
+        error:
+          err.response?.status === 403
+            ? "403 Forbidden — Akses API dibatasi Perplexity"
+            : err.message,
       });
     }
   },
