@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Iky Rest API</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+/* ========== ROOT & BASE ========== */
+:root {
+  --primary-blue: #007AFF;
+  --secondary-blue: #D6E8FF;
+  --dark-text: #222;
+  --light-text: #666;
+  --card-background: #fff;
+  --background-color: #F8F8F8;
+  --shadow-color: rgba(0,0,0,0.05);
+  --transition: all 0.4s ease;
+}
+* {margin:0;padding:0;box-sizing:border-box;}
+body {
+  font-family:'Poppins',sans-serif;
+  color:var(--dark-text);
+  min-height:100vh;
+  overflow-x:hidden;
+  background-size:cover;
+  background-position:center;
+  opacity:0;
+  transition:opacity 0.8s ease, background-image 0.8s ease;
+}
+body.loaded {opacity:1;}
+.d-none {display:none !important;}
+
+/* Loading Screen */
+#loading-screen {
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:var(--card-background);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;transition:opacity 0.5s ease;
+}
+.loading-spinner-large {
+  border:5px solid rgba(0,122,255,0.2);
+  border-top:5px solid var(--primary-blue);
+  border-radius:50%;width:40px;height:40px;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin {to{transform:rotate(360deg);}}
+.loading-text{margin-top:1rem;font-weight:500;color:var(--dark-text);}
+
+/* Navbar & Sidebar */
+.navbar {
+  background:rgba(255,255,255,0.9);
+  border-bottom:1px solid #eee;
+  padding:1rem 2rem;
+  position:sticky;top:0;z-index:100;
+  display:flex;justify-content:space-between;align-items:center;
+  backdrop-filter:blur(10px);
+}
+.brand {font-weight:600;font-size:1.3rem;color:var(--dark-text);}
+.sidebar-toggle{width:25px;height:18px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;background:none;border:none;}
+.bar{width:100%;height:2px;background:var(--dark-text);transition:all 0.3s ease;}
+.sidebar{
+  position:fixed;top:0;right:0;width:250px;height:100%;
+  background:var(--card-background);box-shadow:-5px 0 15px rgba(0,0,0,0.1);
+  transform:translateX(100%);transition:transform 0.3s ease;z-index:999;
+  padding:4rem 1.5rem;
+}
+body.sidebar-open .sidebar{transform:translateX(0);}
+.sidebar ul{list-style:none;}
+.sidebar ul li{margin-bottom:1.2rem;}
+.sidebar ul li a{text-decoration:none;color:var(--dark-text);font-weight:500;display:flex;align-items:center;gap:0.8rem;}
+.sidebar ul li a:hover{color:var(--primary-blue);}
+.sidebar-overlay{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.4);opacity:0;visibility:hidden;transition:0.3s ease;z-index:998;
+}
+body.sidebar-open .sidebar-overlay{opacity:1;visibility:visible;}
+
+/* Marquee */
+.top-marquee {
+  background: linear-gradient(90deg, #007AFF, #00C6FF, #007AFF);
+  background-size: 300% 300%;
+  animation: marqueeGradient 6s ease infinite;
+  padding: 0.4rem;
+  text-align: center;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 2px 10px rgba(0,122,255,0.4);
+}
+@keyframes marqueeGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Content Containers */
+.container {
+  max-width:1200px;
+  margin:2rem auto;
+  padding:0 1rem;
+  text-align:center;
+  transition:opacity 0.8s ease;
+}
+.profile-pic{
+  width:110px;height:110px;border-radius:50%;
+  border:3px solid var(--primary-blue);
+  object-fit:cover;margin-bottom:1rem;
+  box-shadow:0 4px 12px rgba(0,122,255,0.3);
+  transition:transform 0.3s ease;
+}
+.profile-pic:hover{transform:scale(1.05);}
+h1{font-size:2rem;margin-bottom:0.6rem;color:var(--primary-blue);}
+p{font-size:1rem;color:var(--light-text);line-height:1.6;max-width:600px;margin:auto;}
+.button{
+  display:inline-block;margin-top:1.5rem;
+  background:var(--primary-blue);color:#fff;padding:0.8rem 2rem;
+  border-radius:50px;text-decoration:none;transition:0.3s ease;
+}
+.button:hover{background:#005dc1;}
+.fade-out{opacity:0;}
+
+/* Fade pages */
+.page {opacity:0;position:absolute;width:100%;top:0;left:0;transition:opacity 0.8s ease;}
+.page.active {opacity:1;position:relative;}
+</style>
+</head>
+
+<body>
+<!-- Loading Screen -->
+<div id="loading-screen">
+  <div class="loading-spinner-large"></div>
+  <div class="loading-text">Loading...</div>
+</div>
+
+<div class="top-marquee"><marquee scrollamount="6">🌟 Selamat datang di Iky Rest API — Solusi lengkap untuk kebutuhan API kamu! 🚀</marquee></div>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <span class="brand">Iky Rest Api</span>
+  <button class="sidebar-toggle" id="sidebar-toggle">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
+</nav>
+
+<div class="sidebar" id="sidebar">
+  <ul>
+    <li><a href="https://github.com" target="_blank"><i class="fab fa-github"></i>Github</a></li>
+    <li><a href="https://wa.me/6283139882434" target="_blank"><i class="fas fa-envelope"></i>Contact Developer</a></li>
+    <li><a href="https://restapiikyjs.vercel.app/" target="_blank"><i class="fas fa-code"></i>Source Code</a></li>
+  </ul>
+</div>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Pages -->
+<div class="container">
+  <div id="dashboard" class="page active">
+    <img src="https://img1.pixhost.to/images/9147/647147914_encore.jpg" class="profile-pic">
+    <h1>Iky API's — Solusinya</h1>
+    <p>Selamat datang di dashboard Iky API. Semua solusi API yang kamu butuhkan ada di sini 🌟</p>
+    <a href="#api" class="button">Masuk ke API</a>
+  </div>
+
+  <div id="api" class="page">
+    <h1>Iky REST API</h1>
+    <p>Website ini menyediakan berbagai endpoint API gratis dan premium untuk kebutuhan pengembanganmu 🚀</p>
+    <a href="#dashboard" class="button">Kembali ke Dashboard</a>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // tampil loading screen dulu
+  setTimeout(() => {
+    document.getElementById("loading-screen").style.opacity = "0";
+    setTimeout(() => {
+      document.getElementById("loading-screen").style.display = "none";
+      document.body.classList.add("loaded");
+      initApp();
+    }, 500);
+  }, 800);
+});
+
+function initApp(){
+  const sidebarToggle=document.getElementById('sidebar-toggle');
+  const sidebar=document.getElementById('sidebar');
+  const overlay=document.getElementById('sidebar-overlay');
+  sidebarToggle.onclick=()=>document.body.classList.toggle('sidebar-open');
+  overlay.onclick=()=>document.body.classList.remove('sidebar-open');
+
+  const dashboard=document.getElementById("dashboard");
+  const api=document.getElementById("api");
+
+  const routes={
+    dashboard:{
+      el:dashboard,
+      bg:"https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+    },
+    api:{
+      el:api,
+      bg:"https://images.unsplash.com/photo-1535223289827-42f1e9919769"
+    }
+  };
+
+  function renderPage(page){
+    Object.values(routes).forEach(r=>r.el.classList.remove("active"));
+    const route=routes[page]||routes.dashboard;
+    route.el.classList.add("active");
+    document.body.style.backgroundImage=`url('${route.bg}')`;
+  }
+
+  window.addEventListener("hashchange",()=>{
+    const page=location.hash.replace("#","");
+    renderPage(page);
+  });
+
+  // inisialisasi awal
+  const initPage=location.hash.replace("#","")||"dashboard";
+  renderPage(initPage);
+}
+</script>
+</body>
+</html>
