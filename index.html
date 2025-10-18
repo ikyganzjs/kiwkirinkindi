@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iky API App</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --fade-duration: 0.8s;
+  --accent: #00c6ff;
+  --text: #fff;
+}
+* {margin:0; padding:0; box-sizing:border-box;}
+body {
+  font-family:'Poppins',sans-serif;
+  color:var(--text);
+  background-size:cover;
+  background-position:center;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  transition:background-image 0.8s ease, opacity 0.8s ease;
+  opacity:0;
+}
+body.loaded { opacity:1; }
+
+.container {
+  text-align:center;
+  max-width:500px;
+  background:rgba(0,0,0,0.55);
+  padding:2rem;
+  border-radius:16px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.4);
+  transition:opacity var(--fade-duration) ease;
+}
+
+.profile-pic {
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  border:3px solid var(--accent);
+  object-fit:cover;
+  margin-bottom:1rem;
+  transition:transform 0.3s ease;
+}
+.profile-pic:hover { transform:scale(1.05); }
+
+h1 {
+  font-size:2rem;
+  color:var(--accent);
+  overflow:hidden;
+  white-space:nowrap;
+  border-right:3px solid var(--accent);
+  width:0;
+  animation:typing 2.8s steps(20) 0.8s forwards, blink 0.8s step-end infinite alternate;
+}
+@keyframes typing {from{width:0;} to{width:100%;}}
+@keyframes blink {50%{border-color:transparent;}}
+
+p {
+  font-size:1rem;
+  color:#eee;
+  margin-top:1rem;
+  line-height:1.5;
+}
+
+.button {
+  margin-top:2rem;
+  background:var(--accent);
+  color:#fff;
+  padding:0.8rem 2rem;
+  border:none;
+  border-radius:50px;
+  font-size:1rem;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all 0.3s ease;
+  display:inline-block;
+}
+.button:hover {
+  background:#008cd1;
+  transform:translateY(-2px);
+}
+.fade-out {opacity:0;}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+
+<script>
+// Routing sederhana berbasis hash (#dashboard / #api)
+const routes = {
+  dashboard: {
+    background: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    html: `
+      <img src="https://img1.pixhost.to/images/9147/647147914_encore.jpg" class="profile-pic" alt="Profile">
+      <h1>Iky API's — Solusinya</h1>
+      <p>Selamat datang di dashboard Iky API. Semua solusi API yang kamu butuhkan ada di sini 🌟</p>
+      <a href="#api" class="button">Masuk ke API</a>
+    `
+  },
+  api: {
+    background: "https://images.unsplash.com/photo-1535223289827-42f1e9919769",
+    html: `
+      <h1>Iky REST API</h1>
+      <p>Website ini menyediakan berbagai endpoint API gratis dan premium untuk kebutuhan pengembanganmu. 🚀</p>
+      <a href="#dashboard" class="button">Kembali ke Dashboard</a>
+    `
+  }
+};
+
+const app = document.getElementById("app");
+
+// fungsi render halaman
+function renderPage(page) {
+  const route = routes[page] || routes.dashboard;
+  document.body.style.opacity = "0"; // fade out
+  setTimeout(() => {
+    document.body.style.backgroundImage = `url('${route.background}')`;
+    app.innerHTML = route.html;
+    setTimeout(() => document.body.style.opacity = "1", 50); // fade in
+  }, 400);
+}
+
+// handle navigasi
+window.addEventListener("hashchange", () => {
+  const page = location.hash.replace("#", "") || "dashboard";
+  renderPage(page);
+});
+
+// inisialisasi
+document.addEventListener("DOMContentLoaded", () => {
+  document.body.classList.add("loaded");
+  const page = location.hash.replace("#", "") || "dashboard";
+  renderPage(page);
+});
+</script>
+</body>
+</html>
