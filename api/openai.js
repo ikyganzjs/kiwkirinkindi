@@ -1,10 +1,10 @@
 const fetch = require("node-fetch");
 
-const Apis = ["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", "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"]
+const Apis = ["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"]
 
 const GROQ_API_KEY = Apis[Math.floor(Math.random() * Apis.length)];
 
-async function askGroq(prompt, question, model) {
+async function askGroq(prompt, question, model = "moonshotai/kimi-k2-instruct-0905") {
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
