@@ -122,7 +122,7 @@ module.exports = [
             }
 
             // 🔍 Validasi prompt
-            if (!prompt) {
+            if (!prompt || prompt.trim() === "") {
                 return res.status(400).json({
                     creator: "IKY RESTAPI",
                     status: false,
@@ -130,17 +130,19 @@ module.exports = [
                 });
             }
 
-            // 🚀 Jalankan model AI Gemini
+            // 🚀 Jalankan model AI Gemini via Groq
             const result = await askGroq(
                 "Sekarang Kamu Adalah AI Model Gemini",
                 prompt,
                 "openai/gpt-oss-120b"
             );
 
+            // ✅ Kirim hasil ke client
             return res.status(200).json({
                 creator: "IKY RESTAPI",
                 status: true,
-                result: result
+                model: "openai/gpt-oss-120b",
+                result
             });
 
         } catch (err) {
@@ -148,7 +150,7 @@ module.exports = [
             return res.status(500).json({
                 creator: "IKY RESTAPI",
                 status: false,
-                error: "Internal server error: " + err.message
+                error: "Internal server error: " + (err.message || err)
             });
         }
     }
