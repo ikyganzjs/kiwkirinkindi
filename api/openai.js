@@ -1,10 +1,30 @@
 const fetch = require("node-fetch");
 
-const Apis = ["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"]
+// ======== CONFIG ======== //
+const GROQ_API_KEYS = [
+  "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"
+];
+const GROQ_API_KEY = GROQ_API_KEYS[Math.floor(Math.random() * GROQ_API_KEYS.length)];
 
-const GROQ_API_KEY = Apis[Math.floor(Math.random() * Apis.length)];
+// ======== MODEL LIST ======== //
+const GROQ_MODELS = [
+  "groq/compound",
+  "groq/compound-mini",
+  "llama-3.1-8b-instant",
+  "llama-3.3-70b-versatile",
+  "meta-llama/llama-4-maverick-17b-128e-instruct",
+  "meta-llama/llama-4-scout-17b-16e-instruct",
+  "meta-llama/llama-guard-4-12b",
+  "meta-llama/llama-prompt-guard-2-22m",
+  "meta-llama/llama-prompt-guard-2-86m",
+  "moonshotai/kimi-k2-instruct",
+  "moonshotai/kimi-k2-instruct-0905",
+  "openai/gpt-oss-120b",
+  "openai/gpt-oss-20b"
+];
 
-async function askGroq(prompt, question, model = "moonshotai/kimi-k2-instruct-0905") {
+// ======== MAIN FUNCTION ======== //
+async function askGroq(prompt, question, model = "groq/compound") {
   try {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -13,57 +33,50 @@ async function askGroq(prompt, question, model = "moonshotai/kimi-k2-instruct-09
         "Authorization": `Bearer ${GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: model,
+        model,
         messages: [
-          {
-            role: "system",
-            content: prompt
-          },
-          {
-            role: "user",
-            content: question
-          }
+          { role: "system", content: prompt || "You are a helpful assistant." },
+          { role: "user", content: question }
         ]
       })
     });
 
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || "No response from model.";
+    if (!response.ok) throw new Error(data.error?.message || "Groq API Error");
+
+    return data.choices?.[0]?.message?.content?.trim() || "No response from model.";
   } catch (error) {
-    console.error("Error:", error);
-    return "Error while fetching response.";
+    console.error("Groq API Error:", error);
+    return "Error while fetching response from Groq API.";
   }
 }
 
+// ======== ROUTES ======== //
 module.exports = [
-{
-    name: "Grok",
-    desc: "Ai grok models",
-    category: "Openai",
-    path: "/ai/grok?apikey=&question=",
+  // 1️⃣ Grok Chat — model bisa dipilih
+  {
+    name: "Grok AI Chat",
+    desc: "AI Groq with multiple model support",
+    category: "OpenAI",
+    path: "/ai/grok?apikey=&question=&model=&prompt=",
     async run(req, res) {
-        const { apikey, question, model, prompt } = req.query;
+      const { apikey, question, model, prompt } = req.query;
 
-        if (!apikey || !global.apikey.includes(apikey)) {
-            return res.json({ status: false, error: "Apikey invalid" });
-        }
+      if (!apikey || !global.apikey.includes(apikey))
+        return res.json({ status: false, error: "Apikey invalid" });
+      if (!question)
+        return res.json({ status: false, error: "Parameter 'question' is required" });
 
-        if (!question) {
-            return res.json({ status: false, error: "Parameter 'question' is required" });
-        }
+      const selectedModel = GROQ_MODELS.includes(model) ? model : "groq/compound";
 
-        try {
-            const result = await askGroq("", question, "compound-beta")
-
-            res.status(200).json({
-                status: true,
-                result: result
-            });
-        } catch (err) {
-            res.status(500).json({ status: false, error: err.message });
-        }
+      try {
+        const result = await askGroq(prompt, question, selectedModel);
+        res.status(200).json({ status: true, model: selectedModel, result });
+      } catch (err) {
+        res.status(500).json({ status: false, error: err.message || "Internal server error" });
+      }
     }
-},
+  },
 
 {
     name: "Chat GPT",
