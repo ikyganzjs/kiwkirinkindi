@@ -7,10 +7,7 @@ const PROMPT_FILE = path.join(__dirname, "data", "system-prompt.txt");
 
 const DEFAULT_API_KEY = "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";
 const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
-const DEFAULT_MODEL = [
-  "deepseek/deepseek-chat-v3.1",
-  "deepseek/deepseek-r1t2-chimera"
-];
+const DEFAULT_MODEL = "deepseek/deepseek-r1t2-chimera";
 const SITE_URL = "https://github.com/00x0kafyy/worm-ai";
 const SITE_NAME = "WormGPT API";
 
@@ -155,3 +152,4 @@ module.exports = {
     }
   }
 };
+
