@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 
-const Apis = ["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", "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"]
+const Apis = ["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"]
 
 const GROQ_API_KEY = Apis[Math.floor(Math.random() * Apis.length)];
 
